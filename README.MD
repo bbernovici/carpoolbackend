@@ -20,4 +20,4 @@ To package the app in order to use it for the docker image, use the following Ma
 clean install spring-boot:repackage
 ```
 ## Working on this repo
-Please make your own branch and merge it with master when your work is done. 
+Please make your own branch and merge it with develop when your work is done. 
