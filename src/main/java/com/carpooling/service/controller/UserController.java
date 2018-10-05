@@ -32,7 +32,7 @@ public class UserController {
                 employee.getPassword());
 
         statusMap.put("status", status);
-        if (status == 1) {
+        if (status == 2) {
             return new ResponseEntity<>(statusMap, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(statusMap, HttpStatus.CONFLICT);
