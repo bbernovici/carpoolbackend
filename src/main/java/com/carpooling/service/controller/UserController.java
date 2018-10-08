@@ -23,7 +23,6 @@ public class UserController {
     @RequestMapping(value = "/employee/signup",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-
     public ResponseEntity<?> employeeSignUp(@RequestBody Employee employee) {
         HashMap statusMap = new HashMap<String, Integer>();
         Integer status = db.registerEmployee(employee.getFirstName(),
@@ -50,7 +49,7 @@ public class UserController {
                 company.getPassword());
 
         statusMap.put("status", status);
-        if (status == 1) {
+        if (status == 2) {
             return new ResponseEntity<>(statusMap, HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(statusMap, HttpStatus.CONFLICT);

@@ -8,21 +8,14 @@ public class Employee {
     private String mail;
     private String token;
     private String password;
-    private Short role;
-    private Short seats;
-    private Double locationLatitude;
-    private Double locationLongitude;
 
-    public Employee(String id, String firstName, String lastName, String mail, String token, String password, Short role, Short seats, Double locationLatitude, Double locationLongitude) {
+    public Employee(String id, String firstName, String lastName, String mail, String token, String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mail = mail;
         this.token = token;
         this.password = password;
-        this.role = role;
-        this.locationLatitude = locationLatitude;
-        this.locationLongitude = locationLongitude;
     }
 
     public Employee() {
@@ -75,37 +68,5 @@ public class Employee {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Short getRole() {
-        return role;
-    }
-
-    public void setRole(Short role) {
-        this.role = role;
-    }
-
-    public Short getSeats() {
-        return seats;
-    }
-
-    public void setSeats(Short seats) {
-        this.seats = seats;
-    }
-
-    public Double getLocationLatitude() {
-        return locationLatitude;
-    }
-
-    public void setLocationLatitude(Double locationLatitude) {
-        this.locationLatitude = locationLatitude;
-    }
-
-    public Double getLocationLongitude() {
-        return locationLongitude;
-    }
-
-    public void setLocationLongitude(Double locationLongitude) {
-        this.locationLongitude = locationLongitude;
     }
 }

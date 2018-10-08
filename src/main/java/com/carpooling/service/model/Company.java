@@ -20,6 +20,10 @@ public class Company {
         this.locationLongitude = locationLongitude;
     }
 
+    public Company() {
+
+    }
+
     public String getId() {
         return id;
     }
