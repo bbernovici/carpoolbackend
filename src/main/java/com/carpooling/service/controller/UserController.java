@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -19,6 +16,26 @@ public class UserController {
 
     @Autowired
     private UserDatabase db;
+
+    @RequestMapping(value = "/login",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity login(@RequestHeader(value = "USER-TYPE") String type, @RequestBody Employee employee) {
+        String token = db.login(employee.getMail(), employee.getPassword(), type);
+        if (token != null) {
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @RequestMapping(value = "/logout",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> logout(@RequestHeader(value = "USER-TYPE") String type, @RequestHeader(value = "TOKEN") String token) {
+        db.logout(token, type);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/employee/signup",
             method = RequestMethod.POST,
