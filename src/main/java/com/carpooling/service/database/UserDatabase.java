@@ -59,10 +59,15 @@ public class UserDatabase {
     public void logout(String token, String type) {
 
         if(type.equals("employee")) {
+            System.out.print("YEss employee");
+            System.out.print("token" + token);
             MongoCollection<Document> employeeCollection = mongoDatabase.getCollection("employees");
             employeeCollection.updateOne(eq("token", token),
                     combine(set("token", Security.generateToken())));
+
+            System.out.print("updated token " + token);
         } else if (type.equals("company")) {
+            System.out.print("YEss company");
             MongoCollection<Document> companyCollection = mongoDatabase.getCollection("companies");
             companyCollection.updateOne(eq("token", token),
                     combine(set("token", Security.generateToken())));

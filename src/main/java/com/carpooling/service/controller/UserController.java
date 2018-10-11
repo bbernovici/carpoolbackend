@@ -20,10 +20,15 @@ public class UserController {
     @RequestMapping(value = "/login",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestHeader(value = "USER-TYPE") String type, @RequestBody Employee employee) {
+    public ResponseEntity<?> login(@RequestHeader(value = "USER-TYPE") String type, @RequestBody Employee employee) {
+        HashMap statusMap = new HashMap<String, String>();
         String token = db.login(employee.getMail(), employee.getPassword(), type);
+
+        statusMap.put("token", token);
+
+
         if (token != null) {
-            return new ResponseEntity<>(token, HttpStatus.OK);
+            return new ResponseEntity<>(statusMap, HttpStatus.OK);
         } else {
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }
@@ -33,6 +38,8 @@ public class UserController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> logout(@RequestHeader(value = "USER-TYPE") String type, @RequestHeader(value = "TOKEN") String token) {
+        System.out.println("Type " + type);
+        System.out.println("token " + token);
         db.logout(token, type);
         return new ResponseEntity<>(HttpStatus.OK);
     }
