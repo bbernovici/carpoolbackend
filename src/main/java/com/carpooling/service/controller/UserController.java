@@ -1,0 +1,76 @@
+package com.carpooling.service.controller;
+
+import com.carpooling.service.database.UserDatabase;
+import com.carpooling.service.model.Company;
+import com.carpooling.service.model.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+
+@RestController
+public class UserController {
+
+    @Autowired
+    private UserDatabase db;
+
+    @RequestMapping(value = "/login",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity login(@RequestHeader(value = "USER-TYPE") String type, @RequestBody Employee employee) {
+        String token = db.login(employee.getMail(), employee.getPassword(), type);
+        if (token != null) {
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @RequestMapping(value = "/logout",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> logout(@RequestHeader(value = "USER-TYPE") String type, @RequestHeader(value = "TOKEN") String token) {
+        db.logout(token, type);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/employee/signup",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> employeeSignUp(@RequestBody Employee employee) {
+        HashMap statusMap = new HashMap<String, Integer>();
+        Integer status = db.registerEmployee(employee.getFirstName(),
+                employee.getLastName(),
+                employee.getMail(),
+                employee.getPassword());
+
+        statusMap.put("status", status);
+        if (status == 2) {
+            return new ResponseEntity<>(statusMap, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(statusMap, HttpStatus.CONFLICT);
+        }
+    }
+
+    @RequestMapping(value = "/company/signup",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<?> companySignUp(@RequestBody Company company) {
+        HashMap statusMap = new HashMap<String, Integer>();
+        Integer status = db.registerCompany(company.getName(),
+                company.getMail(),
+                company.getPassword());
+
+        statusMap.put("status", status);
+        if (status == 2) {
+            return new ResponseEntity<>(statusMap, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(statusMap, HttpStatus.CONFLICT);
+        }
+    }
+
+}
