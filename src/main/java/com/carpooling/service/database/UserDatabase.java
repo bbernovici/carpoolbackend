@@ -3,6 +3,7 @@ package com.carpooling.service.database;
 import com.carpooling.service.Security;
 import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.User;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -36,20 +37,20 @@ public class UserDatabase {
     private static final Logger LOG = LogManager.getLogger(UserDatabase.class);
 
 
-    public String login(String mail, String password, String type) {
+    public User login(String mail, String password, String type) {
 
         if (type.equals("employee")) {
             if(isEmployeeMailAlreadyRegistered(mail)) {
-                System.out.println("Test");
+                System.out.println("Test" + mail + password);
                 Employee employee = getEmployeeFromMail(mail);
                 Boolean isMatch = Security.doPasswordsMatch(password, employee.getPassword());
-                if(isMatch) return employee.getToken();
+                if(isMatch) return employee;
             }
         } else if (type.equals("company")) {
             if(isCompanyMailAlreadyRegistered(mail)) {
                 Company company = getCompanyFromMail(mail);
                 Boolean isMatch = Security.doPasswordsMatch(password, company.getPassword());
-                if(isMatch) return company.getToken();
+                if(isMatch) return company;
             }
         }
 
@@ -93,7 +94,9 @@ public class UserDatabase {
                         .append("lastName", lastName)
                         .append("mail", mail)
                         .append("password", Security.encryptPassword(password))
-                        .append("token", Security.generateToken());
+                        .append("token", Security.generateToken())
+                        .append("status", "none");
+
                 employeeCollection.insertOne(employee);
 
                 ObjectId id = employee.getObjectId("_id");
@@ -210,7 +213,8 @@ public class UserDatabase {
                 doc.getString("lastName"),
                 doc.getString("mail"),
                 doc.getString("token"),
-                doc.getString("password"));
+                doc.getString("password"),
+                doc.getString("status"));
 
         return employee;
     }
@@ -238,7 +242,8 @@ public class UserDatabase {
                 doc.getString("lastName"),
                 doc.getString("mail"),
                 doc.getString("token"),
-                doc.getString("password"));
+                doc.getString("password"),
+                doc.getString("status"));
 
         return employee;
     }
@@ -255,6 +260,7 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
+        returnFilters.add(Filters.eq("status", 1));
 
 
         Bson returnFilter = Filters.and(returnFilters);
@@ -266,7 +272,8 @@ public class UserDatabase {
                 doc.getString("lastName"),
                 doc.getString("mail"),
                 doc.getString("token"),
-                doc.getString("password"));
+                doc.getString("password"),
+                doc.getString("status"));
 
         return employee;
     }
@@ -355,5 +362,33 @@ public class UserDatabase {
         return company;
     }
 
+    public Company getCompanyFromName(String companyName) {
+        MongoCollection<Document> companyCollection = mongoDatabase.getCollection("companies");
+        List<Bson> queryFilters = new ArrayList<>();
+        queryFilters.add(Filters.eq("name", companyName));
+        Bson searchFilter = Filters.and(queryFilters);
+
+        List<Bson> returnFilters = new ArrayList<>();
+        returnFilters.add(Filters.eq("name", 1));
+        returnFilters.add(Filters.eq("mail", 1));
+        returnFilters.add(Filters.eq("token", 1));
+        returnFilters.add(Filters.eq("password", 1));
+
+
+        Bson returnFilter = Filters.and(returnFilters);
+
+        Company company = null;
+        Document doc = companyCollection.find(searchFilter).projection(returnFilter).first();
+        if(doc != null) {
+            company = new Company(doc.getObjectId("_id").toString(),
+                    doc.getString("name"),
+                    doc.getString("mail"),
+                    doc.getString("password"),
+                    doc.getString("token"),
+                    doc.getString("locationLatitude"),
+                    doc.getString("locationLongitude"));
+        }
+        return company;
+    }
 
 }

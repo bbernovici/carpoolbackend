@@ -1,6 +1,6 @@
 package com.carpooling.service.model;
 
-public class Company {
+public class Company extends User {
 
     private String id;
     private String name;

@@ -3,6 +3,7 @@ package com.carpooling.service.controller;
 import com.carpooling.service.database.UserDatabase;
 import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,11 +22,11 @@ public class UserController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestHeader(value = "USER-TYPE") String type, @RequestBody Employee employee) {
-        String token = db.login(employee.getMail(), employee.getPassword(), type);
-        if (token != null) {
-            return new ResponseEntity<>(token, HttpStatus.OK);
+        User user = db.login(employee.getMail(), employee.getPassword(), type);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -72,5 +73,19 @@ public class UserController {
             return new ResponseEntity<>(statusMap, HttpStatus.CONFLICT);
         }
     }
+
+    @RequestMapping(value = "/company/{name}",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyFromName(@PathVariable(value="name") String companyName) {
+        Company company = db.getCompanyFromName(companyName);
+        if (company != null) {
+            company.setPassword("");
+            return new ResponseEntity<>(company, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(company, HttpStatus.OK);
+        }
+    }
+
 
 }

@@ -8,6 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+
 @RestController
 public class ApplicationController {
 
@@ -41,5 +43,15 @@ public class ApplicationController {
         db.approveEmployeeApplication(appId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/applications",
+                    method = RequestMethod.GET,
+                    consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?>  getApplicationsByCompanyId(@RequestHeader(value="COMPANY-ID") String companyId) {
+
+        ArrayList<Application> appList = db.getApplicationsFromCompanyId(companyId);
+
+        return new ResponseEntity<>(appList, HttpStatus.OK);
     }
 }
