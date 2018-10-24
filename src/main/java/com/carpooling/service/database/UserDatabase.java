@@ -202,7 +202,7 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
-
+        returnFilters.add(Filters.eq("status", 1));
 
         Bson returnFilter = Filters.and(returnFilters);
 

@@ -87,5 +87,18 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "/employee/{id}",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getEmployeeFromId(@PathVariable(value="id") String employeeId) {
+        Employee employee = db.getEmployeeFromId(employeeId);
+        if (employee != null) {
+            employee.setPassword("");
+            return new ResponseEntity<>(employee, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(employee, HttpStatus.OK);
+        }
+    }
+
 
 }

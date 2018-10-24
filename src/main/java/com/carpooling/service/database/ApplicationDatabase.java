@@ -32,6 +32,9 @@ public class ApplicationDatabase {
     @Autowired
     private Driver neo4jDriver;
 
+    @Autowired
+    private UserDatabase userDatabase;
+
     private static final Logger LOG = LogManager.getLogger(ApplicationDatabase.class);
 
     /**
@@ -78,17 +81,28 @@ public class ApplicationDatabase {
 
         Document doc = applicationCollection.find(eq("_id", new ObjectId(appId))).first();
 
+        Session session = neo4jDriver.session();
+        String query;
         if (doc.getString("type").equals("driver")) {
-            Session session = neo4jDriver.session();
-            String query = "MATCH (e:Employee {id:{e_id}}), " +
+
+            query = "MATCH (e:Employee {id:{e_id}}), " +
                     "(c:Company {id:{c_id}}) " +
-                    "MERGE (e)-[:DRIVER_OF]->(c)";
-            Map<String, Object> params = new HashMap<>();
-            params.put("e_id", doc.getString("employeeId"));
-            params.put("c_id", doc.getString("companyId"));
-            session.run(query, params).consume();
-            session.close();
+                    "MERGE (e)-[r:DRIVER_OF]->(c) " +
+                    "ON CREATE SET r.type = {e_type}, r.homeLatitude = {e_homelat}, r.homeLongitude = {e_homelong}";
+        } else {
+            query = "MATCH (e:Employee {id:{e_id}}), " +
+                    "(c:Company {id:{c_id}}) " +
+                    "MERGE (e)-[r:RIDER_OF]->(c) " +
+                    "ON CREATE SET r.type = {e_type}, r.homeLatitude = {e_homelat}, r.homeLongitude = {e_homelong}";
         }
+        Map<String, Object> params = new HashMap<>();
+        params.put("e_id", doc.getString("employeeId"));
+        params.put("c_id", doc.getString("companyId"));
+        params.put("e_type", doc.getString("type"));
+        params.put("e_homelat", doc.getDouble("homeLatitude"));
+        params.put("e_homelong", doc.getDouble("homeLongitude"));
+        session.run(query, params).consume();
+        session.close();
 
         MongoCollection<Document> employeeCollection = mongoDatabase.getCollection("employees");
         employeeCollection.updateOne(eq("_id", new ObjectId(doc.getString("employeeId"))),
@@ -104,15 +118,15 @@ public class ApplicationDatabase {
         applications.forEach(new Block<Document>() {
             @Override
             public void apply(final Document appDoc) {
-                    Application app = new Application();
-                    app.setId(appDoc.getObjectId("_id").toString());
-                    app.setEmployeeId(appDoc.getString("employeeId"));
-                    app.setCompanyId(appDoc.getString("companyId"));
-                    app.setHomeLatitude(appDoc.getDouble("homeLatitude"));
-                    app.setHomeLongitude(appDoc.getDouble("homeLongitude"));
-                    app.setType(appDoc.getString("type"));
-                    app.setVehicleSeats(appDoc.getInteger("vehicleSeats"));
-                    appList.add(app);
+                Application app = new Application();
+                app.setId(appDoc.getObjectId("_id").toString());
+                app.setEmployeeId(appDoc.getString("employeeId"));
+                app.setCompanyId(appDoc.getString("companyId"));
+                app.setHomeLatitude(appDoc.getDouble("homeLatitude"));
+                app.setHomeLongitude(appDoc.getDouble("homeLongitude"));
+                app.setType(appDoc.getString("type"));
+                app.setVehicleSeats(appDoc.getInteger("vehicleSeats"));
+                appList.add(app);
             }
         });
 
