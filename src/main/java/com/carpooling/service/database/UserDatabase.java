@@ -3,6 +3,7 @@ package com.carpooling.service.database;
 import com.carpooling.service.Security;
 import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.Pickup;
 import com.carpooling.service.model.User;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -12,8 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import java.util.Map;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
+import static org.neo4j.driver.v1.Values.parameters;
 
 
 public class UserDatabase {
@@ -390,5 +391,64 @@ public class UserDatabase {
         }
         return company;
     }
+
+    public List<Pickup> getRidersStartingLocation(final String companyId) {
+
+        List<Pickup> pickups = new ArrayList<>();
+        try ( Session session = neo4jDriver.session())
+        {
+            List<Record> records = session.writeTransaction( new TransactionWork<List<Record>>()
+            {
+                @Override
+                public List<Record> execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (e:Employee)-[r:RIDER_OF]-(c:Company) " +
+                                    "WHERE c.id = $companyId " +
+                                    "return c.id, r.homeLatitude, r.homeLongitude",
+                            parameters( "companyId", companyId ) );
+                    return result.list();
+                }
+            } );
+            for(Record r : records) {
+                Pickup p = new Pickup();
+                p.setCompanyId(r.get("c.id").asString());
+                p.setLongitude(r.get("r.homeLongitude").asDouble());
+                p.setLatitude(r.get("r.homeLatitude").asDouble());
+                p.setType("rider");
+                pickups.add(p);
+            }
+        }
+        return pickups;
+    }
+
+    public List<Pickup> getDriversStartingLocation(final String companyId) {
+
+        List<Pickup> pickups = new ArrayList<>();
+        try ( Session session = neo4jDriver.session())
+        {
+            List<Record> records = session.writeTransaction( new TransactionWork<List<Record>>()
+            {
+                @Override
+                public List<Record> execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (e:Employee)-[r:DRIVER_OF]-(c:Company) " +
+                                    "WHERE c.id = $companyId " +
+                                    "return c.id, r.homeLatitude, r.homeLongitude",
+                            parameters( "companyId", companyId ) );
+                    return result.list();
+                }
+            } );
+            for(Record r : records) {
+                Pickup p = new Pickup();
+                p.setCompanyId(r.get("c.id").asString());
+                p.setLongitude(r.get("r.homeLongitude").asDouble());
+                p.setLatitude(r.get("r.homeLatitude").asDouble());
+                p.setType("driver");
+                pickups.add(p);
+            }
+        }
+        return pickups;
+    }
+
 
 }

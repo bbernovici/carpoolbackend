@@ -3,6 +3,7 @@ package com.carpooling.service.controller;
 import com.carpooling.service.database.UserDatabase;
 import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.Pickup;
 import com.carpooling.service.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -77,7 +79,7 @@ public class UserController {
     @RequestMapping(value = "/company/{name}",
             method = RequestMethod.GET)
 
-    public ResponseEntity<?> getCompanyFromName(@PathVariable(value="name") String companyName) {
+    public ResponseEntity<?> getCompanyFromName(@PathVariable(value = "name") String companyName) {
         Company company = db.getCompanyFromName(companyName);
         if (company != null) {
             company.setPassword("");
@@ -90,7 +92,7 @@ public class UserController {
     @RequestMapping(value = "/employee/{id}",
             method = RequestMethod.GET)
 
-    public ResponseEntity<?> getEmployeeFromId(@PathVariable(value="id") String employeeId) {
+    public ResponseEntity<?> getEmployeeFromId(@PathVariable(value = "id") String employeeId) {
         Employee employee = db.getEmployeeFromId(employeeId);
         if (employee != null) {
             employee.setPassword("");
@@ -98,6 +100,23 @@ public class UserController {
         } else {
             return new ResponseEntity<>(employee, HttpStatus.OK);
         }
+    }
+
+
+    @RequestMapping(value = "/company/riders/location",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyRidersLocation(@RequestHeader(value = "COMPANY-ID") String companyId) {
+        List<Pickup> startingLocations = db.getRidersStartingLocation(companyId);
+        return new ResponseEntity<>(startingLocations, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/company/drivers/location",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyDriversLocation(@RequestHeader(value = "COMPANY-ID") String companyId) {
+        List<Pickup> startingLocations = db.getDriversStartingLocation(companyId);
+        return new ResponseEntity<>(startingLocations, HttpStatus.OK);
     }
 
 
