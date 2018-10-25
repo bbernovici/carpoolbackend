@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results skipped="0" failed="0" ignored="0" total="1" passed="1">
+  <reporter-output>
+  </reporter-output>
+  <suite name="Surefire suite" duration-ms="59" started-at="2018-10-22T16:52:58 CEST" finished-at="2018-10-22T16:52:58 CEST">
+    <groups>
+    </groups>
+    <test name="Surefire test" duration-ms="59" started-at="2018-10-22T16:52:58 CEST" finished-at="2018-10-22T16:52:58 CEST">
+      <class name="com.carpooling.service.AppTest">
+        <test-method status="PASS" signature="shouldAnswerWithTrue()" name="shouldAnswerWithTrue" duration-ms="18" started-at="2018-10-22T16:52:58 CEST" finished-at="2018-10-22T16:52:58 CEST">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- shouldAnswerWithTrue -->
+      </class> <!-- com.carpooling.service.AppTest -->
+    </test> <!-- Surefire test -->
+  </suite> <!-- Surefire suite -->
+</testng-results>
