@@ -1,10 +1,7 @@
 package com.carpooling.service.controller;
 
 import com.carpooling.service.database.UserDatabase;
-import com.carpooling.service.model.Company;
-import com.carpooling.service.model.Employee;
-import com.carpooling.service.model.Pickup;
-import com.carpooling.service.model.User;
+import com.carpooling.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -123,7 +120,7 @@ public class UserController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
 
-    public ResponseEntity<?> companySignUp(@ModelAttribute List<Pickup> pickups) {
+    public ResponseEntity<?> companySignUp(@RequestBody PickupList pickups) {
         db.addCompanyPickups(pickups);
         return new ResponseEntity<>(HttpStatus.OK);
     }
