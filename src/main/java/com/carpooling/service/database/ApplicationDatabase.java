@@ -3,16 +3,17 @@ package com.carpooling.service.database;
 import com.carpooling.service.model.Application;
 import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.User;
 import com.mongodb.Block;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Map;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
+import static org.neo4j.driver.v1.Values.parameters;
 
 public class ApplicationDatabase {
 
@@ -131,5 +133,34 @@ public class ApplicationDatabase {
         });
 
         return appList;
+    }
+
+    public ArrayList<Employee> getApprovedEmployeesFromCompanyId(final String companyId) {
+        ArrayList<Employee> employees = new ArrayList<>();
+        System.out.println("pula mea");
+        try (Session session = neo4jDriver.session())
+        {
+            List<Record> records = session.writeTransaction(new TransactionWork<List<Record>>()
+            {
+                @Override
+                public List<Record> execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (e:Employee)-[:DRIVER_OF|RIDER_OF]-(c:Company) " +
+                                    "WHERE c.id = $companyId " +
+                                        "RETURN e.id",
+                            parameters( "companyId", companyId ) );
+                    return result.list();
+                }
+            } );
+            System.out.println("sugeeee");
+            for(Record r : records) {
+                System.out.println("HAHAHA");
+                Employee e = userDatabase.getEmployeeFromId(r.get("e.id").asString());
+                e.setPassword(null);
+                e.setToken(null);
+                employees.add(e);
+            }
+        }
+        return employees;
     }
 }

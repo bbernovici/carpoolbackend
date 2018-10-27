@@ -120,7 +120,7 @@ public class UserController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
 
-    public ResponseEntity<?> companySignUp(@RequestBody PickupList pickups) {
+    public ResponseEntity<?> companySignUp(@RequestBody List<Pickup> pickups) {
         db.addCompanyPickups(pickups);
         return new ResponseEntity<>(HttpStatus.OK);
     }

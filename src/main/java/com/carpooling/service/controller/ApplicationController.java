@@ -2,6 +2,7 @@ package com.carpooling.service.controller;
 
 import com.carpooling.service.database.ApplicationDatabase;
 import com.carpooling.service.model.Application;
+import com.carpooling.service.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,5 +54,14 @@ public class ApplicationController {
         ArrayList<Application> appList = db.getApplicationsFromCompanyId(companyId);
 
         return new ResponseEntity<>(appList, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/company/employees",
+            method = RequestMethod.GET)
+    public ResponseEntity<?>  getEmployeesByCompanyId(@RequestHeader(value="COMPANY-ID") String companyId) {
+
+        ArrayList<Employee> employees = db.getApprovedEmployeesFromCompanyId(companyId);
+
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 }
