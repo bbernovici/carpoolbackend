@@ -124,6 +124,8 @@ public class ApplicationDatabase {
             public void apply(final Document appDoc) {
                 Application app = new Application();
                 app.setId(appDoc.getObjectId("_id").toString());
+                app.setEmployeeFirstName(userDatabase.getEmployeeFromId(appDoc.getString("employeeId")).getFirstName());
+                app.setEmployeeLastName(userDatabase.getEmployeeFromId(appDoc.getString("employeeId")).getLastName());
                 app.setEmployeeId(appDoc.getString("employeeId"));
                 app.setCompanyId(appDoc.getString("companyId"));
                 app.setHomeLatitude(appDoc.getDouble("homeLatitude"));

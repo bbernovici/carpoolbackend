@@ -3,6 +3,8 @@ package com.carpooling.service.model;
 public class Application {
 
     private String id;
+    private String employeeFirstName;
+    private String employeeLastName;
     private String employeeId;
     private String companyId;
     private String type;
@@ -10,8 +12,10 @@ public class Application {
     private Double homeLongitude;
     private Integer vehicleSeats;
 
-    public Application(String id, String employeeId, String companyId, String type, Double homeLatitude, Double homeLongitude, Integer vehicleSeats) {
+    public Application(String id, String employeeFirstName, String employeeLastName, String employeeId, String companyId, String type, Double homeLatitude, Double homeLongitude, Integer vehicleSeats) {
         this.id = id;
+        this.employeeFirstName = employeeFirstName;
+        this.employeeLastName = employeeLastName;
         this.employeeId = employeeId;
         this.companyId = companyId;
         this.type = type;
@@ -30,6 +34,22 @@ public class Application {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getEmployeeFirstName() {
+        return employeeFirstName;
+    }
+
+    public void setEmployeeFirstName(String employeeFirstName) {
+        this.employeeFirstName = employeeFirstName;
+    }
+
+    public String getEmployeeLastName() {
+        return employeeLastName;
+    }
+
+    public void setEmployeeLastName(String employeeLastName) {
+        this.employeeLastName = employeeLastName;
     }
 
     public String getEmployeeId() {
