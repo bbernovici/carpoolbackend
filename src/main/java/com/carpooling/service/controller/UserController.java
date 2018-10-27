@@ -119,5 +119,13 @@ public class UserController {
         return new ResponseEntity<>(startingLocations, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/company/pickups/add",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<?> companySignUp(@RequestBody List<Pickup> pickups) {
+        db.addCompanyPickups(pickups);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 
 }

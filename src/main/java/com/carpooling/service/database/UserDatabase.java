@@ -450,5 +450,15 @@ public class UserDatabase {
         return pickups;
     }
 
+    public void addCompanyPickups(List<Pickup> pickups) {
+        MongoCollection<Document> companyCollection = mongoDatabase.getCollection("pickups");
+        for(Pickup p : pickups) {
+            Document pickup = new Document("companyId", p.getCompanyId())
+                    .append("latitude", p.getLatitude())
+                    .append("longitude", p.getLongitude());
+            companyCollection.insertOne(pickup);
+        }
+    }
+
 
 }
