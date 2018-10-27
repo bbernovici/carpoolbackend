@@ -125,7 +125,7 @@ public class UserController {
 
     public ResponseEntity<?> companySignUp(@RequestBody List<Pickup> pickups) {
         db.addCompanyPickups(pickups);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }
