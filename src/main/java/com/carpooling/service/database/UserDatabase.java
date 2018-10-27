@@ -96,6 +96,7 @@ public class UserDatabase {
                         .append("mail", mail)
                         .append("password", Security.encryptPassword(password))
                         .append("token", Security.generateToken())
+                        .append("type", "none")
                         .append("status", "none");
 
                 employeeCollection.insertOne(employee);
@@ -203,6 +204,7 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
+        returnFilters.add(Filters.eq("type", 1));
         returnFilters.add(Filters.eq("status", 1));
 
         Bson returnFilter = Filters.and(returnFilters);
@@ -215,6 +217,7 @@ public class UserDatabase {
                 doc.getString("mail"),
                 doc.getString("token"),
                 doc.getString("password"),
+                doc.getString("type"),
                 doc.getString("status"));
 
         return employee;
@@ -232,7 +235,8 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
-
+        returnFilters.add(Filters.eq("type", 1));
+        returnFilters.add(Filters.eq("status", 1));
 
         Bson returnFilter = Filters.and(returnFilters);
 
@@ -244,6 +248,7 @@ public class UserDatabase {
                 doc.getString("mail"),
                 doc.getString("token"),
                 doc.getString("password"),
+                doc.getString("type"),
                 doc.getString("status"));
 
         return employee;
@@ -261,6 +266,7 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
+        returnFilters.add(Filters.eq("type", 1));
         returnFilters.add(Filters.eq("status", 1));
 
 
@@ -274,6 +280,7 @@ public class UserDatabase {
                 doc.getString("mail"),
                 doc.getString("token"),
                 doc.getString("password"),
+                doc.getString("type"),
                 doc.getString("status"));
 
         return employee;

@@ -47,8 +47,7 @@ public class ApplicationController {
     }
 
     @RequestMapping(value = "/applications",
-                    method = RequestMethod.GET,
-                    consumes = MediaType.APPLICATION_JSON_VALUE)
+                    method = RequestMethod.GET)
     public ResponseEntity<?>  getApplicationsByCompanyId(@RequestHeader(value="COMPANY-ID") String companyId) {
 
         ArrayList<Application> appList = db.getApplicationsFromCompanyId(companyId);

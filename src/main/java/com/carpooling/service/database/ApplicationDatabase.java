@@ -109,6 +109,8 @@ public class ApplicationDatabase {
         MongoCollection<Document> employeeCollection = mongoDatabase.getCollection("employees");
         employeeCollection.updateOne(eq("_id", new ObjectId(doc.getString("employeeId"))),
                 combine(set("status", "approved")));
+        employeeCollection.updateOne(eq("_id", new ObjectId(doc.getString("employeeId"))),
+                combine(set("type", doc.getString("type"))));
     }
 
     public ArrayList<Application> getApplicationsFromCompanyId(String companyId) {
@@ -137,7 +139,6 @@ public class ApplicationDatabase {
 
     public ArrayList<Employee> getApprovedEmployeesFromCompanyId(final String companyId) {
         ArrayList<Employee> employees = new ArrayList<>();
-        System.out.println("pula mea");
         try (Session session = neo4jDriver.session())
         {
             List<Record> records = session.writeTransaction(new TransactionWork<List<Record>>()
@@ -152,9 +153,7 @@ public class ApplicationDatabase {
                     return result.list();
                 }
             } );
-            System.out.println("sugeeee");
             for(Record r : records) {
-                System.out.println("HAHAHA");
                 Employee e = userDatabase.getEmployeeFromId(r.get("e.id").asString());
                 e.setPassword(null);
                 e.setToken(null);
