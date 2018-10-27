@@ -37,8 +37,7 @@ public class ApplicationController {
     }
 
     @RequestMapping(value = "/application/approve",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            method = RequestMethod.POST)
     public ResponseEntity<?> approveEmployeeApplication(@RequestHeader(value="APP-ID") String appId) {
 
         db.approveEmployeeApplication(appId);

@@ -1,9 +1,6 @@
 package com.carpooling.service;
 
-import com.carpooling.service.database.ApplicationDatabase;
-import com.carpooling.service.database.MongoClientInstantiator;
-import com.carpooling.service.database.Neo4jClientInstantiator;
-import com.carpooling.service.database.UserDatabase;
+import com.carpooling.service.database.*;
 import com.mongodb.client.MongoDatabase;
 import org.neo4j.driver.v1.Driver;
 import org.springframework.context.annotation.Bean;
@@ -31,4 +28,6 @@ public class Configuration {
         return new ApplicationDatabase();
     }
 
+    @Bean
+    public PathDatabase pathDatabase() { return new PathDatabase(); }
 }
