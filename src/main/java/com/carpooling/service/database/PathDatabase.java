@@ -45,7 +45,7 @@ public class PathDatabase {
                         return result.single();
                     }
                 } );
-                startingPickupId = record.get("c.id").asLong();
+                startingPickupId = record.get("id(p)").asLong();
                 if (i > 0) {
                     Map<String, Object> params2 = new HashMap<>();
                     String pathNodeQuery = "MATCH (p1:Pickup {id: $currentPickUpId}), " +
