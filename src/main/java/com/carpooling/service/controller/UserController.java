@@ -116,13 +116,21 @@ public class UserController {
         return new ResponseEntity<>(startingLocations, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/company/pickups/add",
+    @RequestMapping(value = "/company/pickups",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
 
     public ResponseEntity<?> companySignUp(@RequestBody List<Pickup> pickups) {
         db.addCompanyPickups(pickups);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/company/pickups",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyPickups(@RequestHeader(value = "EMPLOYEE-ID") String employeeId) {
+        List<Pickup> companyPickups = db.getPickupsFromUserId(employeeId);
+        return new ResponseEntity<>(companyPickups, HttpStatus.OK);
     }
 
 }
