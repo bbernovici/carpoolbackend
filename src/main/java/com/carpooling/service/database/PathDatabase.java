@@ -1,9 +1,14 @@
 package com.carpooling.service.database;
 
 import com.carpooling.service.Security;
+import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.Path;
 import com.carpooling.service.model.Pickup;
+import com.mongodb.Block;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -26,6 +31,9 @@ public class PathDatabase {
 
     @Autowired
     private Driver neo4jDriver;
+
+    @Autowired
+    private UserDatabase userDatabase;
 
     private static final Logger LOG = LogManager.getLogger(PathDatabase.class);
 
@@ -67,5 +75,46 @@ public class PathDatabase {
                     .append("minute", minute);
             pathsCollection.insertOne(path);
         }
+    }
+
+    public ArrayList<Path> getDriversForPickUp(final String pickupId) {
+        try ( Session session = neo4jDriver.session())
+        {
+            List<Record> records = session.writeTransaction( new TransactionWork<List<Record>>()
+            {
+                @Override
+                public List<Record> execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (p:Pickup) " +
+                                    "WHERE p.id = $pickupId" +
+                                    "RETURN p.driverId",
+                            parameters( "pickupId", pickupId));
+                    return result.list();
+                }
+            } );
+            for(Record r : records) {
+                MongoCollection<Document> pathsCollection = mongoDatabase.getCollection("paths");
+                final FindIterable<Document> paths = pathsCollection.find(Filters.eq("driverId", r.get("p.driverId").asString()));
+                final ArrayList<Path> pathList = new ArrayList<>();
+                paths.forEach(new Block<Document>() {
+                    @Override
+                    public void apply(final Document pathDoc) {
+                        Path path = new Path();
+                        path.setId(pathDoc.getObjectId("_id").toString());
+                        path.setDriverId(pathDoc.getString("driverId"));
+                        Employee e = userDatabase.getEmployeeFromId(path.getDriverId());
+                        path.setDriverFirstName(e.getFirstName());
+                        path.setDriverLastName(e.getLastName());
+                        path.setStartingPickup(pathDoc.getLong("startingPickup"));
+                        path.setMembers((String[]) pathDoc.get("members"));
+                        path.setHour(pathDoc.getInteger("hour"));
+                        path.setMinute(pathDoc.getInteger("minute"));
+                        pathList.add(path);
+                    }
+                });
+                return pathList;
+            }
+        }
+        return new ArrayList<>();
     }
 }
