@@ -40,7 +40,7 @@ public class PathDatabase {
                     @Override
                     public Record execute(Transaction tx )
                     {
-                        StatementResult result = tx.run( "CREATE (p:Pickup {id: $pickupId, driverId: $driverId})",
+                        StatementResult result = tx.run( "CREATE (p:Pickup {id: $pickupId, driverId: $driverId}) RETURN id(p)",
                                 parameters( "pickupId", pickups.get(u).getId(), "driverId", driverId) );
                         return result.single();
                     }
