@@ -30,9 +30,9 @@ public class PathDatabase {
     private static final Logger LOG = LogManager.getLogger(PathDatabase.class);
 
     public void addDriverPath(final List<Pickup> pickups, final String driverId, Integer hour, Integer minute) {
+        Long startingPickupId = 0L;
         for (int i = 0; i < pickups.size(); i++) {
             final int u = i;
-            Long startingPickupId = 0L;
             try ( Session session = neo4jDriver.session())
             {
                 Record record = session.writeTransaction(new TransactionWork<Record>()
@@ -57,15 +57,15 @@ public class PathDatabase {
                     session.close();
                 }
             }
-            if(startingPickupId != 0L) {
-                MongoCollection<Document> pathsCollection = mongoDatabase.getCollection("paths");
-                Document path = new Document("driverId", driverId)
-                        .append("startingPickup", startingPickupId)
-                        .append("members", new ArrayList<>())
-                        .append("hour", hour)
-                        .append("minute", minute);
-                pathsCollection.insertOne(path);
-            }
+        }
+        if(startingPickupId != 0L) {
+            MongoCollection<Document> pathsCollection = mongoDatabase.getCollection("paths");
+            Document path = new Document("driverId", driverId)
+                    .append("startingPickup", startingPickupId)
+                    .append("members", new ArrayList<>())
+                    .append("hour", hour)
+                    .append("minute", minute);
+            pathsCollection.insertOne(path);
         }
     }
 }
