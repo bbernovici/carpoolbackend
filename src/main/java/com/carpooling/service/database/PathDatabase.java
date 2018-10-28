@@ -40,11 +40,8 @@ public class PathDatabase {
                     @Override
                     public Record execute(Transaction tx )
                     {
-                        Map<String, Object> params = new HashMap<>();
-                        params.put("pickupId", pickups.get(u).getId());
-                        params.put("driverId", driverId);
                         StatementResult result = tx.run( "CREATE (p:Pickup {id: $pickupId, driverId: $driverId})",
-                                parameters( params) );
+                                parameters( "pickupId", pickups.get(u).getId(), "driverId", driverId) );
                         return result.single();
                     }
                 } );
