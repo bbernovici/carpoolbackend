@@ -109,6 +109,8 @@ public class ApplicationDatabase {
         MongoCollection<Document> employeeCollection = mongoDatabase.getCollection("employees");
         employeeCollection.updateOne(eq("_id", new ObjectId(doc.getString("employeeId"))),
                 combine(set("status", "approved")));
+        applicationCollection.updateOne(eq("_id", new ObjectId(appId)),
+                combine(set("status", "approved")));
         employeeCollection.updateOne(eq("_id", new ObjectId(doc.getString("employeeId"))),
                 combine(set("type", doc.getString("type"))));
     }
