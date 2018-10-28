@@ -8,17 +8,19 @@ public class Application {
     private String employeeId;
     private String companyId;
     private String type;
+    private String status;
     private Double homeLatitude;
     private Double homeLongitude;
     private Integer vehicleSeats;
 
-    public Application(String id, String employeeFirstName, String employeeLastName, String employeeId, String companyId, String type, Double homeLatitude, Double homeLongitude, Integer vehicleSeats) {
+    public Application(String id, String employeeFirstName, String employeeLastName, String employeeId, String companyId, String type, String status, Double homeLatitude, Double homeLongitude, Integer vehicleSeats) {
         this.id = id;
         this.employeeFirstName = employeeFirstName;
         this.employeeLastName = employeeLastName;
         this.employeeId = employeeId;
         this.companyId = companyId;
         this.type = type;
+        this.status = status;
         this.homeLatitude = homeLatitude;
         this.homeLongitude = homeLongitude;
         this.vehicleSeats = vehicleSeats;
@@ -74,6 +76,14 @@ public class Application {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Double getHomeLatitude() {

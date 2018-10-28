@@ -118,7 +118,7 @@ public class ApplicationDatabase {
     public ArrayList<Application> getApplicationsFromCompanyId(String companyId) {
         MongoCollection<Document> applicationCollection = mongoDatabase.getCollection("applications");
 
-        final FindIterable<Document> applications = applicationCollection.find(eq("companyId", companyId));
+        final FindIterable<Document> applications = applicationCollection.find(Filters.and(Filters.eq("companyId", companyId), Filters.eq("status", "applied")));
 
         final ArrayList<Application> appList = new ArrayList<>();
         applications.forEach(new Block<Document>() {
@@ -133,6 +133,7 @@ public class ApplicationDatabase {
                 app.setHomeLatitude(appDoc.getDouble("homeLatitude"));
                 app.setHomeLongitude(appDoc.getDouble("homeLongitude"));
                 app.setType(appDoc.getString("type"));
+                app.setStatus(appDoc.getString("status"));
                 app.setVehicleSeats(appDoc.getInteger("vehicleSeats"));
                 appList.add(app);
             }
