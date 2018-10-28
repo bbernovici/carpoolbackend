@@ -86,7 +86,7 @@ public class PathDatabase {
                 public List<Record> execute(Transaction tx )
                 {
                     StatementResult result = tx.run( "MATCH (p:Pickup) " +
-                                    "WHERE p.id = $pickupId" +
+                                    "WHERE p.id = $pickupId " +
                                     "RETURN p.driverId",
                             parameters( "pickupId", pickupId));
                     return result.list();
