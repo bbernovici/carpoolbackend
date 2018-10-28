@@ -106,7 +106,7 @@ public class PathDatabase {
                         path.setDriverFirstName(e.getFirstName());
                         path.setDriverLastName(e.getLastName());
                         path.setStartingPickup(pathDoc.getLong("startingPickup"));
-                        path.setMembers((String[]) pathDoc.get("members"));
+                        path.setMembers((ArrayList<String>) pathDoc.get("members"));
                         path.setHour(pathDoc.getInteger("hour"));
                         path.setMinute(pathDoc.getInteger("minute"));
                         pathList.add(path);

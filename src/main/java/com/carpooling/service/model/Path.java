@@ -9,7 +9,7 @@ public class Path {
     private String driverLastName;
     private String driverId;
     private Long startingPickup;
-    private String[] members;
+    private ArrayList<String> members;
     private Integer hour;
     private Integer minute;
 
@@ -17,7 +17,7 @@ public class Path {
 
     }
 
-    public Path(String id, String driverFirstName, String driverLastName, String driverId, Long startingPickup, String[] members, Integer hour, Integer minute) {
+    public Path(String id, String driverFirstName, String driverLastName, String driverId, Long startingPickup, ArrayList<String> members, Integer hour, Integer minute) {
         this.id = id;
         this.driverFirstName = driverFirstName;
         this.driverLastName = driverLastName;
@@ -68,11 +68,11 @@ public class Path {
         this.startingPickup = startingPickup;
     }
 
-    public String[] getMembers() {
+    public ArrayList<String> getMembers() {
         return members;
     }
 
-    public void setMembers(String[] members) {
+    public void setMembers(ArrayList<String> members) {
         this.members = members;
     }
 
