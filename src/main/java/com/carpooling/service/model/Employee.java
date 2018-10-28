@@ -1,6 +1,6 @@
 package com.carpooling.service.model;
 
-public class Employee {
+public class Employee extends User {
 
     private String id;
     private String firstName;
@@ -8,19 +8,24 @@ public class Employee {
     private String mail;
     private String token;
     private String password;
+    private String type;
+    private String status;
 
-    public Employee(String id, String firstName, String lastName, String mail, String token, String password) {
+    public Employee(String id, String firstName, String lastName, String mail, String token, String password, String type, String status) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.mail = mail;
         this.token = token;
         this.password = password;
+        this.type = type;
+        this.status = status;
     }
 
     public Employee() {
 
     }
+
 
     public String getId() {
         return id;
@@ -68,5 +73,21 @@ public class Employee {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

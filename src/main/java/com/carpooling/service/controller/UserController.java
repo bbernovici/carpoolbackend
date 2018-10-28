@@ -1,8 +1,7 @@
 package com.carpooling.service.controller;
 
 import com.carpooling.service.database.UserDatabase;
-import com.carpooling.service.model.Company;
-import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -21,11 +21,11 @@ public class UserController {
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity login(@RequestHeader(value = "USER-TYPE") String type, @RequestBody Employee employee) {
-        String token = db.login(employee.getMail(), employee.getPassword(), type);
-        if (token != null) {
-            return new ResponseEntity<>(token, HttpStatus.OK);
+        User user = db.login(employee.getMail(), employee.getPassword(), type);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
         } else {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -71,6 +71,58 @@ public class UserController {
         } else {
             return new ResponseEntity<>(statusMap, HttpStatus.CONFLICT);
         }
+    }
+
+    @RequestMapping(value = "/company/{name}",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyFromName(@PathVariable(value = "name") String companyName) {
+        Company company = db.getCompanyFromName(companyName);
+        if (company != null) {
+            company.setPassword("");
+            return new ResponseEntity<>(company, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(company, HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/employee/{id}",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getEmployeeFromId(@PathVariable(value = "id") String employeeId) {
+        Employee employee = db.getEmployeeFromId(employeeId);
+        if (employee != null) {
+            employee.setPassword("");
+            return new ResponseEntity<>(employee, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(employee, HttpStatus.OK);
+        }
+    }
+
+
+    @RequestMapping(value = "/company/riders/location",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyRidersLocation(@RequestHeader(value = "COMPANY-ID") String companyId) {
+        List<Pickup> startingLocations = db.getRidersStartingLocation(companyId);
+        return new ResponseEntity<>(startingLocations, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/company/drivers/location",
+            method = RequestMethod.GET)
+
+    public ResponseEntity<?> getCompanyDriversLocation(@RequestHeader(value = "COMPANY-ID") String companyId) {
+        List<Pickup> startingLocations = db.getDriversStartingLocation(companyId);
+        return new ResponseEntity<>(startingLocations, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/company/pickups/add",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+
+    public ResponseEntity<?> companySignUp(@RequestBody List<Pickup> pickups) {
+        db.addCompanyPickups(pickups);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

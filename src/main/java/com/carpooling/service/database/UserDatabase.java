@@ -3,6 +3,8 @@ package com.carpooling.service.database;
 import com.carpooling.service.Security;
 import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.Pickup;
+import com.carpooling.service.model.User;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -11,8 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.neo4j.driver.v1.Driver;
-import org.neo4j.driver.v1.Session;
+import org.neo4j.driver.v1.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Map;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
+import static org.neo4j.driver.v1.Values.parameters;
 
 
 public class UserDatabase {
@@ -36,20 +38,20 @@ public class UserDatabase {
     private static final Logger LOG = LogManager.getLogger(UserDatabase.class);
 
 
-    public String login(String mail, String password, String type) {
+    public User login(String mail, String password, String type) {
 
         if (type.equals("employee")) {
             if(isEmployeeMailAlreadyRegistered(mail)) {
-                System.out.println("Test");
+                System.out.println("Test" + mail + password);
                 Employee employee = getEmployeeFromMail(mail);
                 Boolean isMatch = Security.doPasswordsMatch(password, employee.getPassword());
-                if(isMatch) return employee.getToken();
+                if(isMatch) return employee;
             }
         } else if (type.equals("company")) {
             if(isCompanyMailAlreadyRegistered(mail)) {
                 Company company = getCompanyFromMail(mail);
                 Boolean isMatch = Security.doPasswordsMatch(password, company.getPassword());
-                if(isMatch) return company.getToken();
+                if(isMatch) return company;
             }
         }
 
@@ -93,7 +95,10 @@ public class UserDatabase {
                         .append("lastName", lastName)
                         .append("mail", mail)
                         .append("password", Security.encryptPassword(password))
-                        .append("token", Security.generateToken());
+                        .append("token", Security.generateToken())
+                        .append("type", "none")
+                        .append("status", "none");
+
                 employeeCollection.insertOne(employee);
 
                 ObjectId id = employee.getObjectId("_id");
@@ -199,7 +204,8 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
-
+        returnFilters.add(Filters.eq("type", 1));
+        returnFilters.add(Filters.eq("status", 1));
 
         Bson returnFilter = Filters.and(returnFilters);
 
@@ -210,7 +216,9 @@ public class UserDatabase {
                 doc.getString("lastName"),
                 doc.getString("mail"),
                 doc.getString("token"),
-                doc.getString("password"));
+                doc.getString("password"),
+                doc.getString("type"),
+                doc.getString("status"));
 
         return employee;
     }
@@ -227,7 +235,8 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
-
+        returnFilters.add(Filters.eq("type", 1));
+        returnFilters.add(Filters.eq("status", 1));
 
         Bson returnFilter = Filters.and(returnFilters);
 
@@ -238,7 +247,9 @@ public class UserDatabase {
                 doc.getString("lastName"),
                 doc.getString("mail"),
                 doc.getString("token"),
-                doc.getString("password"));
+                doc.getString("password"),
+                doc.getString("type"),
+                doc.getString("status"));
 
         return employee;
     }
@@ -255,6 +266,8 @@ public class UserDatabase {
         returnFilters.add(Filters.eq("mail", 1));
         returnFilters.add(Filters.eq("token", 1));
         returnFilters.add(Filters.eq("password", 1));
+        returnFilters.add(Filters.eq("type", 1));
+        returnFilters.add(Filters.eq("status", 1));
 
 
         Bson returnFilter = Filters.and(returnFilters);
@@ -266,7 +279,9 @@ public class UserDatabase {
                 doc.getString("lastName"),
                 doc.getString("mail"),
                 doc.getString("token"),
-                doc.getString("password"));
+                doc.getString("password"),
+                doc.getString("type"),
+                doc.getString("status"));
 
         return employee;
     }
@@ -353,6 +368,103 @@ public class UserDatabase {
                 doc.getString("locationLongitude"));
 
         return company;
+    }
+
+    public Company getCompanyFromName(String companyName) {
+        MongoCollection<Document> companyCollection = mongoDatabase.getCollection("companies");
+        List<Bson> queryFilters = new ArrayList<>();
+        queryFilters.add(Filters.eq("name", companyName));
+        Bson searchFilter = Filters.and(queryFilters);
+
+        List<Bson> returnFilters = new ArrayList<>();
+        returnFilters.add(Filters.eq("name", 1));
+        returnFilters.add(Filters.eq("mail", 1));
+        returnFilters.add(Filters.eq("token", 1));
+        returnFilters.add(Filters.eq("password", 1));
+
+
+        Bson returnFilter = Filters.and(returnFilters);
+
+        Company company = null;
+        Document doc = companyCollection.find(searchFilter).projection(returnFilter).first();
+        if(doc != null) {
+            company = new Company(doc.getObjectId("_id").toString(),
+                    doc.getString("name"),
+                    doc.getString("mail"),
+                    doc.getString("password"),
+                    doc.getString("token"),
+                    doc.getString("locationLatitude"),
+                    doc.getString("locationLongitude"));
+        }
+        return company;
+    }
+
+    public List<Pickup> getRidersStartingLocation(final String companyId) {
+
+        List<Pickup> pickups = new ArrayList<>();
+        try ( Session session = neo4jDriver.session())
+        {
+            List<Record> records = session.writeTransaction( new TransactionWork<List<Record>>()
+            {
+                @Override
+                public List<Record> execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (e:Employee)-[r:RIDER_OF]-(c:Company) " +
+                                    "WHERE c.id = $companyId " +
+                                    "return c.id, r.homeLatitude, r.homeLongitude",
+                            parameters( "companyId", companyId ) );
+                    return result.list();
+                }
+            } );
+            for(Record r : records) {
+                Pickup p = new Pickup();
+                p.setCompanyId(r.get("c.id").asString());
+                p.setLongitude(r.get("r.homeLongitude").asDouble());
+                p.setLatitude(r.get("r.homeLatitude").asDouble());
+                p.setType("rider");
+                pickups.add(p);
+            }
+        }
+        return pickups;
+    }
+
+    public List<Pickup> getDriversStartingLocation(final String companyId) {
+
+        List<Pickup> pickups = new ArrayList<>();
+        try ( Session session = neo4jDriver.session())
+        {
+            List<Record> records = session.writeTransaction( new TransactionWork<List<Record>>()
+            {
+                @Override
+                public List<Record> execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (e:Employee)-[r:DRIVER_OF]-(c:Company) " +
+                                    "WHERE c.id = $companyId " +
+                                    "return c.id, r.homeLatitude, r.homeLongitude",
+                            parameters( "companyId", companyId ) );
+                    return result.list();
+                }
+            } );
+            for(Record r : records) {
+                Pickup p = new Pickup();
+                p.setCompanyId(r.get("c.id").asString());
+                p.setLongitude(r.get("r.homeLongitude").asDouble());
+                p.setLatitude(r.get("r.homeLatitude").asDouble());
+                p.setType("driver");
+                pickups.add(p);
+            }
+        }
+        return pickups;
+    }
+
+    public void addCompanyPickups(List<Pickup> pickups) {
+        MongoCollection<Document> companyCollection = mongoDatabase.getCollection("pickups");
+        for(Pickup p : pickups) {
+            Document pickup = new Document("companyId", p.getCompanyId())
+                    .append("latitude", p.getLatitude())
+                    .append("longitude", p.getLongitude());
+            companyCollection.insertOne(pickup);
+        }
     }
 
 

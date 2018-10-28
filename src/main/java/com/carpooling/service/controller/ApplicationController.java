@@ -2,11 +2,14 @@ package com.carpooling.service.controller;
 
 import com.carpooling.service.database.ApplicationDatabase;
 import com.carpooling.service.model.Application;
+import com.carpooling.service.model.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 public class ApplicationController {
@@ -34,12 +37,29 @@ public class ApplicationController {
     }
 
     @RequestMapping(value = "/application/approve",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            method = RequestMethod.POST)
     public ResponseEntity<?> approveEmployeeApplication(@RequestHeader(value="APP-ID") String appId) {
 
         db.approveEmployeeApplication(appId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/applications",
+                    method = RequestMethod.GET)
+    public ResponseEntity<?>  getApplicationsByCompanyId(@RequestHeader(value="COMPANY-ID") String companyId) {
+
+        ArrayList<Application> appList = db.getApplicationsFromCompanyId(companyId);
+
+        return new ResponseEntity<>(appList, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/company/employees",
+            method = RequestMethod.GET)
+    public ResponseEntity<?>  getEmployeesByCompanyId(@RequestHeader(value="COMPANY-ID") String companyId) {
+
+        ArrayList<Employee> employees = db.getApprovedEmployeesFromCompanyId(companyId);
+
+        return new ResponseEntity<>(employees, HttpStatus.OK);
     }
 }
