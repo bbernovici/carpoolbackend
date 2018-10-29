@@ -41,8 +41,7 @@ public class PathController {
     }
 
     @RequestMapping(value = "/path/join",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            method = RequestMethod.POST)
     public ResponseEntity<?> joinPath(@RequestHeader(name="PATH-ID") String pathId,
                                                     @RequestHeader(name="RIDER-ID") String riderId) {
 
