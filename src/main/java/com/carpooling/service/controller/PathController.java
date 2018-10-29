@@ -22,7 +22,7 @@ public class PathController {
     @RequestMapping(value = "/path/create",
             method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> employeeApplyToCompany(@RequestHeader(name="EMPLOYEE-ID") String driverId,
+    public ResponseEntity<?> createPath(@RequestHeader(name="EMPLOYEE-ID") String driverId,
                                                     @RequestHeader(name="START-HOUR") Integer hour,
                                                     @RequestHeader(name="START-MINUTE") Integer minute,
                                                     @RequestBody List<Pickup> pickups) {
@@ -38,5 +38,15 @@ public class PathController {
         ArrayList<Path> paths = db.getDriversForPickUp(pickupId);
 
         return new ResponseEntity<>(paths, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/path/join",
+            method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> joinPath(@RequestHeader(name="PATH-ID") String pathId,
+                                                    @RequestHeader(name="RIDER-ID") String riderId) {
+
+        db.joinPath(riderId, pathId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

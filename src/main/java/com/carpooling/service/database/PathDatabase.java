@@ -12,6 +12,8 @@ import com.mongodb.client.model.Filters;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.neo4j.driver.v1.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.push;
+import static com.mongodb.client.model.Updates.set;
 import static org.neo4j.driver.v1.Values.parameters;
 
 public class PathDatabase {
@@ -116,5 +122,14 @@ public class PathDatabase {
             }
         }
         return new ArrayList<>();
+    }
+
+    public void joinPath(String riderId, String pathId) {
+        MongoCollection<Document> pathsCollection = mongoDatabase.getCollection("paths");
+        pathsCollection.updateOne(eq("_id", new ObjectId(pathId)),
+                combine(set("status", "approved")));
+        Bson filter = eq("_id", new ObjectId(pathId));
+        Bson change = push("members", riderId);
+        pathsCollection.updateOne(filter, change);
     }
 }
