@@ -9,7 +9,7 @@ public class MongoClientInstantiator {
     private MongoClient mongoClient;
 
     public MongoClientInstantiator() {
-        mongoClient = new MongoClient("mongodb");
+        mongoClient = new MongoClient("localhost");
     }
 
     public MongoClient getClientInstance() {

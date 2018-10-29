@@ -16,6 +16,9 @@ public class TimeRemaining {
         this.arrivalTime = arrivalTime;
     }
 
+    public String setContent(){
+        return content;
+    }
     public String getContent() {
         return Integer.toString(Minutes.minutesBetween(DateTime.now(), arrivalTime).getMinutes()) + " minutes remaining. Your carpool will arrive at " + arrivalTime;
     }

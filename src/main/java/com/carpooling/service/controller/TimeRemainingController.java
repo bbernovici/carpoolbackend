@@ -11,8 +11,10 @@ import java.util.HashMap;
 
 @RestController
 public class TimeRemainingController {
+
     // map from username to arrival time
     private HashMap<String, DateTime> times = new HashMap<>();
+
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
     public TimeRemaining greeting(HelloMessage message) throws Exception {
