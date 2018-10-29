@@ -51,6 +51,9 @@ services:
 
   neo4j:
     image: neo4j:3.4.7
+    container_name: "neo4j"
+    environment:
+      - NEO4J_AUTH=neo4j/carpooling
     ports:
       - "17474:7474"
     volumes:
