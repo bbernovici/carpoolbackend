@@ -126,8 +126,6 @@ public class PathDatabase {
 
     public void joinPath(String riderId, String pathId) {
         MongoCollection<Document> pathsCollection = mongoDatabase.getCollection("paths");
-        pathsCollection.updateOne(eq("_id", new ObjectId(pathId)),
-                combine(set("status", "approved")));
         Bson filter = eq("_id", new ObjectId(pathId));
         Bson change = push("members", riderId);
         pathsCollection.updateOne(filter, change);
