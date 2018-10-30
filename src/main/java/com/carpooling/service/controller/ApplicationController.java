@@ -3,13 +3,18 @@ package com.carpooling.service.controller;
 import com.carpooling.service.database.ApplicationDatabase;
 import com.carpooling.service.model.Application;
 import com.carpooling.service.model.Employee;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 public class ApplicationController {
@@ -28,6 +33,19 @@ public class ApplicationController {
                 app.getVehicleSeats(),
                 app.getHomeLatitude(),
                 app.getHomeLongitude());
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection = null;
+        try {
+            connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            channel.basicPublish("", "applications", null, app.getEmployeeId().getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
 
         if (success) {
             return new ResponseEntity<>(HttpStatus.CREATED);

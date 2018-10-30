@@ -2,7 +2,8 @@ package com.carpooling.service;
 
 import java.util.concurrent.TimeUnit;
 
-import com.carpooling.service.model.RabbitApplication;
+import com.carpooling.service.model.Employee;
+import com.carpooling.service.model.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
