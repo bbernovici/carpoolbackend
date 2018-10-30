@@ -1,6 +1,6 @@
 var stompClient = null;
 
-function setConnected(connected) {
+function setConnected(connected) { // Connect/Disconnect button
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
@@ -12,13 +12,16 @@ function setConnected(connected) {
     $("#greetings").html("");
 }
 
+var connected = false;
+
 function connect() {
     var socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
+        connected = true;
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
+        stompClient.subscribe('/topic/arrival', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
     });
@@ -33,7 +36,7 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+    stompClient.send("/employee/{id}", {}, JSON.stringify({'carOwner': "replace-with-username"}));
 }
 
 function showGreeting(message) {
@@ -46,6 +49,14 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
+    connect();
+    (function(){
+        if (connected) {
+            console.log("sending msg");
+            sendName();
+        }
+        setTimeout(arguments.callee, 30000);
+
+    })();
     $( "#send" ).click(function() { sendName(); });
 });
-
