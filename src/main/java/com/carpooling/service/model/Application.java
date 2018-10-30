@@ -1,5 +1,8 @@
 package com.carpooling.service.model;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
 public class Application {
 
     private String id;
@@ -109,4 +112,6 @@ public class Application {
     public void setVehicleSeats(Integer vehicleSeats) {
         this.vehicleSeats = vehicleSeats;
     }
+
+
 }
