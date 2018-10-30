@@ -36,7 +36,7 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/car", {}, JSON.stringify({'carOwner': "replace-with-username"}));  // todo: replace with username
+    stompClient.send("/employee/{id}", {}, JSON.stringify({'carOwner': "replace-with-username"}));
 }
 
 function showGreeting(message) {

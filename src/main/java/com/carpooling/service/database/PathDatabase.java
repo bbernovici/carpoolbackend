@@ -16,8 +16,7 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.neo4j.driver.v1.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.push;
-import static com.mongodb.client.model.Updates.set;
 import static org.neo4j.driver.v1.Values.parameters;
 
 public class PathDatabase {
