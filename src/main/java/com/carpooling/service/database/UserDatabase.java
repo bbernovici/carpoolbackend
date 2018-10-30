@@ -5,6 +5,8 @@ import com.carpooling.service.model.Company;
 import com.carpooling.service.model.Employee;
 import com.carpooling.service.model.Pickup;
 import com.carpooling.service.model.User;
+import com.mongodb.Block;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -465,6 +467,49 @@ public class UserDatabase {
                     .append("longitude", p.getLongitude());
             companyCollection.insertOne(pickup);
         }
+    }
+
+    public ArrayList<Pickup> getPickupsFromCompanyId(String companyId) {
+        MongoCollection<Document> pickupCollection = mongoDatabase.getCollection("pickups");
+
+        final FindIterable<Document> pickups = pickupCollection.find(Filters.eq("companyId", companyId));
+
+        final ArrayList<Pickup> pickupList = new ArrayList<>();
+        pickups.forEach(new Block<Document>() {
+            @Override
+            public void apply(final Document pickupDoc) {
+                Pickup pickup = new Pickup();
+                pickup.setType("pickup");
+                pickup.setCompanyId(pickupDoc.getString("companyId"));
+                pickup.setLatitude(pickupDoc.getDouble("latitude"));
+                pickup.setLongitude(pickupDoc.getDouble("longitude"));
+                pickup.setId(pickupDoc.getObjectId("_id").toString());
+                pickupList.add(pickup);
+            }
+        });
+
+        return pickupList;
+    }
+
+    public ArrayList<Pickup> getPickupsFromUserId(final String employeeId) {
+        String companyId = "";
+        try ( Session session = neo4jDriver.session())
+        {
+            Record record = session.writeTransaction( new TransactionWork<Record>()
+            {
+                @Override
+                public Record execute(Transaction tx )
+                {
+                    StatementResult result = tx.run( "MATCH (e:Employee)-[r:RIDER_OF|DRIVER_OF]-(c:Company) " +
+                                    "WHERE e.id = $employeeId " +
+                                    "RETURN c.id",
+                            parameters( "employeeId", employeeId ) );
+                    return result.single();
+                }
+            } );
+            companyId = record.get("c.id").asString();
+        }
+        return getPickupsFromCompanyId(companyId);
     }
 
 
