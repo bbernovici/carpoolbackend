@@ -34,19 +34,7 @@ public class ApplicationController {
                 app.getHomeLatitude(),
                 app.getHomeLongitude());
 
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        Connection connection = null;
-        try {
-            connection = factory.newConnection();
-            Channel channel = connection.createChannel();
-            channel.basicPublish("", "applications", null, app.getEmployeeId().getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
-
+        sendToRabbit("applicationscreate", app.getEmployeeId());
         if (success) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
@@ -54,11 +42,29 @@ public class ApplicationController {
         }
     }
 
+    private void sendToRabbit(String queueName, String id){
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection = null;
+        try {
+            connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            channel.basicPublish("", queueName, null, id.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
+
+    }
     @RequestMapping(value = "/application/approve",
             method = RequestMethod.POST)
     public ResponseEntity<?> approveEmployeeApplication(@RequestHeader(value="APP-ID") String appId) {
 
         db.approveEmployeeApplication(appId);
+
+        sendToRabbit("applicationsapprove", appId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -69,6 +75,9 @@ public class ApplicationController {
 
         ArrayList<Application> appList = db.getApplicationsFromCompanyId(companyId);
 
+        sendToRabbit("applications", companyId);
+
+
         return new ResponseEntity<>(appList, HttpStatus.OK);
     }
 
@@ -77,6 +86,8 @@ public class ApplicationController {
     public ResponseEntity<?>  getEmployeesByCompanyId(@RequestHeader(value="COMPANY-ID") String companyId) {
 
         ArrayList<Employee> employees = db.getApprovedEmployeesFromCompanyId(companyId);
+
+        sendToRabbit("companyemployees", companyId);
 
         return new ResponseEntity<>(employees, HttpStatus.OK);
     }
