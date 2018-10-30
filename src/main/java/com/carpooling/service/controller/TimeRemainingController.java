@@ -1,9 +1,8 @@
 package com.carpooling.service.controller;
 
+import com.carpooling.service.model.Car;
 import com.carpooling.service.model.TimeRemaining;
-import com.carpooling.service.model.HelloMessage;
 import org.joda.time.DateTime;
-import org.joda.time.Minutes;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,14 +14,13 @@ public class TimeRemainingController {
     // map from username to arrival time
     private HashMap<String, DateTime> times = new HashMap<>();
 
-    @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
-    public TimeRemaining greeting(HelloMessage message) throws Exception {
-        Thread.sleep(1000); // simulated delay
-        if (!times.containsKey(message.getName())) {
-            times.put(message.getName(), DateTime.now().plusMinutes(60));
+    @MessageMapping("/car")
+    @SendTo("/topic/arrival")
+    public TimeRemaining greeting(Car carOwner) throws Exception {
+        if (!times.containsKey(carOwner.getCarOwner())) {
+            times.put(carOwner.getCarOwner(), DateTime.now().plusMinutes(60));
         }
-        DateTime arrivalTime = times.get(message.getName());
+        DateTime arrivalTime = times.get(carOwner.getCarOwner());
         return new TimeRemaining(arrivalTime);
     }
 

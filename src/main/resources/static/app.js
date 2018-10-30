@@ -1,6 +1,6 @@
 var stompClient = null;
 
-function setConnected(connected) {
+function setConnected(connected) { // Connect/Disconnect button
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
@@ -21,7 +21,7 @@ function connect() {
         setConnected(true);
         connected = true;
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
+        stompClient.subscribe('/topic/arrival', function (greeting) {
             showGreeting(JSON.parse(greeting.body).content);
         });
     });
@@ -36,7 +36,7 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': "replace-with-username"}));  // todo: replace with username
+    stompClient.send("/app/car", {}, JSON.stringify({'carOwner': "replace-with-username"}));  // todo: replace with username
 }
 
 function showGreeting(message) {
@@ -55,7 +55,7 @@ $(function () {
             console.log("sending msg");
             sendName();
         }
-        setTimeout(arguments.callee, 5000);
+        setTimeout(arguments.callee, 30000);
 
     })();
     $( "#send" ).click(function() { sendName(); });

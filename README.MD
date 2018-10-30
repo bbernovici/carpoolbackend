@@ -21,3 +21,15 @@ clean install spring-boot:repackage
 ```
 ## Working on this repo
 Please make your own branch and merge it with develop when your work is done. 
+
+##Starting the websocket
+You need to expose the mongodb and neo4j ports in order to start the application. 
+
+The following commands should be used :
+
+Mongo:
+docker run --name mongodb -p 27017:27017 -d mongo
+
+Neo4j:
+docker run  --publish=7474:7474 --publish=7687:7687 --volume=$HOME/neo4j/data:/data neo4j
+
