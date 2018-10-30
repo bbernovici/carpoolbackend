@@ -1,4 +1,4 @@
-package com.carpooling.service.model;
+package com.carpooling.service;
 
 import com.carpooling.service.Receiver;
 import org.springframework.amqp.core.Binding;
@@ -9,13 +9,15 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+@SpringBootApplication
 public class RabbitApplication {
 
-    public static final String topicExchangeName = "spring-boot-exchange";
+     public static final String topicExchangeName = "spring-boot-exchange";
 
-    public static final String queueName = "spring-boot";
+     public static final String queueName = "spring-boot";
 
     @Bean
     Queue queue() {
@@ -48,7 +50,7 @@ public class RabbitApplication {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        SpringApplication.run(Application.class, args).close();
+        SpringApplication.run(RabbitApplication.class, args).close();
     }
 
 }

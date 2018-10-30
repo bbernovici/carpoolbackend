@@ -42,3 +42,4 @@ docker run -p 5671:5671 -p 5672:5672 -p 15672:15672 --name=rabbit rabbitmq:3-man
 
 Use localhost:15672 to check your rabbit info. Username and pasword should be guest guest.
 
+When you want to start the rabbit you use the command : docker start rabbit

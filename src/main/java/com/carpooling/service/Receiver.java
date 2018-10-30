@@ -6,14 +6,18 @@ import org.springframework.stereotype.Component;
 public class Receiver {
 
 
-  private CountDownLatch latch = new CountDownLatch(1);
+    public void setLatch(CountDownLatch latch) {
+        this.latch = latch;
+    }
 
-  public void receiveMessage(String message) {
+    private CountDownLatch latch = new CountDownLatch(1);
+
+    public void receiveMessage(String message) {
         System.out.println("Received <" + message + ">");
         latch.countDown();
-        }
+    }
 
-  public CountDownLatch getLatch() {
+    public CountDownLatch getLatch() {
         return latch;
-        }
+    }
 }

@@ -1,8 +1,5 @@
 package com.carpooling.service.model;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
 public class Application {
 
     private String id;
