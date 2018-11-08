@@ -34,3 +34,4 @@ hs_err_pid*
 carpool-backend.iml
 target/
     .idea
+.idea/carpoolbackend.iml
