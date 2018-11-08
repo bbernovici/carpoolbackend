@@ -3,9 +3,7 @@ package com.carpooling.service.controller;
 import com.carpooling.service.database.ApplicationDatabase;
 import com.carpooling.service.model.Application;
 import com.carpooling.service.model.Employee;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,7 +40,7 @@ public class ApplicationController {
         }
     }
 
-    private void sendToRabbit(String queueName, String id){
+    private void sendToRabbit(String queueName, String id) {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         Connection connection = null;
@@ -55,22 +53,23 @@ public class ApplicationController {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
-        //This is the consumer
-
-//        Consumer consumer = new DefaultConsumer(channel) {
-//            @Override
-//            public void handleDelivery(String consumerTag, Envelope envelope,
-//                                       AMQP.BasicProperties properties, byte[] body)
-//                    throws IOException {
-//                String message = new String(body, "UTF-8");
-//                System.out.println(" [x] Received '" + message + "'");
-//            }
-//        };
-//        channel.basicConsume(QUEUE_NAME, true, consumer);
-
-
     }
+
+    private void consumerMessage(String queueName, String id) throws IOException {
+        Connection connection = null;
+        Channel channel = connection.createChannel();
+        Consumer consumer = new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope,
+                                       AMQP.BasicProperties properties, byte[] body)
+                    throws IOException {
+                String message = new String(body, "UTF-8");
+                System.out.println(" [x] Received '" + message + "'");
+            }
+        };
+        channel.basicConsume(queueName, true, consumer);
+    }
+
     @RequestMapping(value = "/application/approve",
             method = RequestMethod.POST)
     public ResponseEntity<?> approveEmployeeApplication(@RequestHeader(value="APP-ID") String appId) {
