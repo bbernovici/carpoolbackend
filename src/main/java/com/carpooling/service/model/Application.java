@@ -109,4 +109,6 @@ public class Application {
     public void setVehicleSeats(Integer vehicleSeats) {
         this.vehicleSeats = vehicleSeats;
     }
+
+
 }
