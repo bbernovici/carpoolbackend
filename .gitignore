@@ -9,3 +9,5 @@ carpool-backend.iml
 src/main/java/com/carpooling/service/database/.gitignore
 target/
 .idea/compiler.xml
+.idea/carpoolbackend.iml
+.idea/inspectionProfiles/
