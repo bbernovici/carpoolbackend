@@ -1,5 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
-<<<<<<< HEAD
+
 ### Java template
 # Compiled class file
 *.class
@@ -36,17 +36,5 @@ carpool-backend.iml
 target/
     .idea
 .idea/carpoolbackend.iml
-=======
-    .idea
-.idea/encodings.xml
-.idea/libraries/
-.idea/misc.xml
-.idea/modules.xml
-.idea/workspace.xml
-carpool-backend.iml
-src/main/java/com/carpooling/service/database/.gitignore
-target/
-.idea/compiler.xml
-.idea/carpoolbackend.iml
-.idea/inspectionProfiles/
->>>>>>> d31028e1f831ef0f3df52984e28df50cee4dd86e
+
+
