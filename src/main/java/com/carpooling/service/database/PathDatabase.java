@@ -130,4 +130,35 @@ public class PathDatabase {
         Bson change = push("members", riderId);
         pathsCollection.updateOne(filter, change);
     }
+
+    public Path getPathFromId(String id) {
+        MongoCollection<Document> pathCollection = mongoDatabase.getCollection("paths");
+        List<Bson> queryFilters = new ArrayList<>();
+        queryFilters.add(Filters.eq("_id", new ObjectId(id)));
+        Bson searchFilter = Filters.and(queryFilters);
+
+        List<Bson> returnFilters = new ArrayList<>();
+        returnFilters.add(Filters.eq("driverFirstName", 1));
+        returnFilters.add(Filters.eq("driverLastName", 1));
+        returnFilters.add(Filters.eq("driverId", 1));
+        returnFilters.add(Filters.eq("startingPickup", 1));
+        returnFilters.add(Filters.eq("members", 1));
+        returnFilters.add(Filters.eq("hour", 1));
+        returnFilters.add(Filters.eq("minute", 1));
+
+        Bson returnFilter = Filters.and(returnFilters);
+
+        Document doc = pathCollection.find(searchFilter).projection(returnFilter).first();
+
+        Path path = new Path(doc.getObjectId("_id").toString(),
+                doc.getString("driverFirstName"),
+                doc.getString("driverLastName"),
+                doc.getString("driverId"),
+                doc.getLong("startingPickup"),
+                (ArrayList<String>) doc.get("members"),
+                doc.getInteger("hour"),
+                doc.getInteger("minute"));
+
+        return path;
+    }
 }

@@ -48,4 +48,12 @@ public class PathController {
         db.joinPath(riderId, pathId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/path",
+            method = RequestMethod.GET)
+    public ResponseEntity<?> getPathId(@RequestHeader(value="PATH-ID") String pathId) {
+
+        Path path = db.getPathFromId(pathId);
+        return new ResponseEntity<>(path, HttpStatus.OK);
+    }
 }

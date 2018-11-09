@@ -2,6 +2,7 @@ package com.carpooling.service;
 
 import com.carpooling.service.database.*;
 import com.mongodb.client.MongoDatabase;
+import com.rabbitmq.client.Channel;
 import org.neo4j.driver.v1.Driver;
 import org.springframework.context.annotation.Bean;
 
@@ -16,6 +17,11 @@ public class Configuration {
     @Bean
     public Driver neo4jSession() {
         return new Neo4jClientInstantiator().getDriver();
+    }
+
+    @Bean
+    public Channel rabbitMqChannel() {
+        return new RabbitMQConnector().getChannel();
     }
 
     @Bean
