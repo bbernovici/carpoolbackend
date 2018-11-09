@@ -12,6 +12,7 @@ public class Neo4jClientInstantiator {
     public Neo4jClientInstantiator() {
         driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "carpooling"));
     }
+
     public Driver getDriver() {
         return driver;
     }
