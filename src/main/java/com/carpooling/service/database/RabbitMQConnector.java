@@ -24,15 +24,10 @@ public class RabbitMQConnector {
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-        try {
-            channel = conn.createChannel();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public Channel getChannel() {
-        return channel;
+    public Connection getConnection() {
+        return conn;
     }
 
 
