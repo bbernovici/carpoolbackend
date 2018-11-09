@@ -56,18 +56,25 @@ public class ApplicationController {
     }
 
     private void consumerMessage(String queueName, String id) throws IOException {
+        ConnectionFactory factory = new ConnectionFactory();
         Connection connection = null;
-        Channel channel = connection.createChannel();
-        Consumer consumer = new DefaultConsumer(channel) {
-            @Override
-            public void handleDelivery(String consumerTag, Envelope envelope,
-                                       AMQP.BasicProperties properties, byte[] body)
-                    throws IOException {
-                String message = new String(body, "UTF-8");
-                System.out.println(" [x] Received '" + message + "'");
-            }
-        };
-        channel.basicConsume(queueName, true, consumer);
+        try {
+            connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            Consumer consumer = new DefaultConsumer(channel) {
+                @Override
+                public void handleDelivery(String consumerTag, Envelope envelope,
+                                           AMQP.BasicProperties properties, byte[] body)
+                        throws IOException {
+                    String message = new String(body, "UTF-8");
+                    System.out.println(" [x] Received '" + message + "'");
+                }
+            };
+            channel.basicConsume(queueName, true, consumer);
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @RequestMapping(value = "/application/approve",
