@@ -21,25 +21,3 @@ clean install spring-boot:repackage
 ```
 ## Working on this repo
 Please make your own branch and merge it with develop when your work is done. 
-
-##Starting the websocket
-You need to expose the mongodb and neo4j ports in order to start the application. 
-
-The following commands should be used :
-
-Mongo:
-docker run --name mongodb -p 27017:27017 -d mongo
-
-Neo4j:
-docker run  --publish=7474:7474 --publish=7687:7687 --volume=$HOME/neo4j/data:/data neo4j
-
-
-##Starting RabbitMq
-
-First install Rabbit by using docker pull rabbit 
-then run this command in your terminal: 
-docker run -p 5671:5671 -p 5672:5672 -p 15672:15672 --name=rabbit rabbitmq:3-management
-
-Use localhost:15672 to check your rabbit info. Username and pasword should be guest guest.
-
-When you want to start the rabbit you use the command : docker start rabbit

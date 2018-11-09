@@ -30,16 +30,6 @@ import static com.mongodb.client.model.Updates.push;
 import static com.mongodb.client.model.Updates.set;
 import static org.neo4j.driver.v1.Values.parameters;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.push;
-import static org.neo4j.driver.v1.Values.parameters;
-
 public class PathDatabase {
 
     @Autowired
