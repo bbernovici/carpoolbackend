@@ -16,12 +16,12 @@ public class TimeRemainingController {
 
     @MessageMapping("/car")
     @SendTo("/topic/arrival")
-    public TimeRemaining greeting(Car carOwner) throws Exception {
+    public String greeting(Car carOwner) throws Exception {
         if (!times.containsKey(carOwner.getCarOwner())) {
             times.put(carOwner.getCarOwner(), DateTime.now().plusMinutes(60));
         }
         DateTime arrivalTime = times.get(carOwner.getCarOwner());
-        return new TimeRemaining(arrivalTime);
+        return new TimeRemaining(arrivalTime).getContent();
     }
 
 }

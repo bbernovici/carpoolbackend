@@ -22,6 +22,8 @@ function connect() {
         connected = true;
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/arrival', function (greeting) {
+            console.log(" got ");
+            console.log(greeting);
             showGreeting(JSON.parse(greeting.body).content);
         });
     });
@@ -36,7 +38,7 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/employee/{id}", {}, JSON.stringify({'carOwner': "replace-with-username"}));
+    stompClient.send("/app/car", {}, JSON.stringify({'carOwner': "replace-with-username"}));
 }
 
 function showGreeting(message) {
@@ -55,7 +57,7 @@ $(function () {
             console.log("sending msg");
             sendName();
         }
-        setTimeout(arguments.callee, 30000);
+        setTimeout(arguments.callee, 1000);
 
     })();
     $( "#send" ).click(function() { sendName(); });
